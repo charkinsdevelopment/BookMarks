@@ -1,0 +1,46 @@
+﻿@page "/my-book-marks"
+@using BlazorApp.Shared;
+@inject HttpClient Http
+
+<PageTitle>My Book Marks</PageTitle>
+
+<h1>My Book Marks</h1>
+
+@if (bookMarks == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row" data-masonry='{"percentPosition": true }'>
+          @foreach(var bookMark in bookMarks)
+            {
+                <div class="col-sm-6 col-lg-4 mb-4">
+                    <div class="card">
+                        <img class="bd-placeholder-img card-img-top" src="@bookMark.ImageUrl"/>
+                        <div class="card-body">
+                            <h5 class="card-title">@bookMark.Title</h5>
+                            <p class="card-text">@bookMark.Description</p>
+                            <p class="card-text"><small class="text-muted">@bookMark.LastAccessed</small></p>
+                        </div>
+                    </div>
+                </div>
+            }
+    </div>
+}
+
+@code {
+    private BookMark[] bookMarks = new BookMark[] { };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            bookMarks = await Http.GetFromJsonAsync<BookMark[]>("/api/BookMarks") ?? new BookMark[] { };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+    }
+}
